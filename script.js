@@ -3,6 +3,7 @@
 
 const CANVAS_HEIGHT = 300;
 const CANVAS_WIDTH = 400;
+//SCREEN_EDGE is how the top-left corner of the canvas is from the viewport
 const SCREEN_EDGE = 100;
 const PADDLE_WIDTH = 10;
 const PADDLE_HEIGHT = 70;
@@ -10,17 +11,18 @@ const BALL_RADIUS = 7;
 const FRAMES_PER_SECOND = 35;
 let mouseX = 0;
 let mouseY = 0;
-let ballXPosition = SCREEN_EDGE + CANVAS_WIDTH/2;
-let ballYPosition = SCREEN_EDGE + CANVAS_HEIGHT/2;
+let ballXPosition = SCREEN_EDGE + CANVAS_WIDTH/2;//center vertically
+let ballYPosition = SCREEN_EDGE + CANVAS_HEIGHT/2;//center horizontally
 let ballXVelocity = 8;
 let ballYVelocity = 5;
 let rightPaddleCenter = SCREEN_EDGE + CANVAS_HEIGHT/2;
+let throwBallInPlayersDirection = true;
 
 window.onload = function() {// wait for window to load
 
 // --------------------Event Listeners ---------------------------//
 
-//move player paddle on mouse moves
+//move player paddle on mouse move
 window.addEventListener('mousemove', (event) => {
   mouseX = event.x;
   mouseY = event.y;
@@ -49,13 +51,13 @@ function movePlayerPaddle(mouseX, mouseY) {
   let leftPaddlePosition = mouseY;
 
   if(leftPaddlePosition <= SCREEN_EDGE + PADDLE_HEIGHT/2) {
-    //fix left paddle to top of canvas
+    //if mouse leaves canvas from top, fix left paddle to top of canvas
     drawRectangle(SCREEN_EDGE, SCREEN_EDGE, PADDLE_WIDTH,
       PADDLE_HEIGHT, 'white');
   }
   else if(leftPaddlePosition >= SCREEN_EDGE + CANVAS_HEIGHT
     - PADDLE_HEIGHT/2) {
-    //fix left paddle to bottom of canvas
+    //if mouse leaves canvas from bottom, fix left paddle to bottom of canvas
     drawRectangle(SCREEN_EDGE, SCREEN_EDGE + CANVAS_HEIGHT -
       PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_HEIGHT, 'white');
   }
@@ -74,29 +76,19 @@ function moveComputerPaddle() {
     ballIsABovePaddle = false;
   }
 
-  if(Math.abs(distanceBetweenPaddleAndBall) >= 40
+  if(Math.abs(distanceBetweenPaddleAndBall) >= 35
           && ballIsABovePaddle) {
             rightPaddleCenter -= 10;
   }
-  else if (Math.abs(distanceBetweenPaddleAndBall) >= 40
+  else if (Math.abs(distanceBetweenPaddleAndBall) >= 35
           && !ballIsABovePaddle) {
             rightPaddleCenter += 10;
   }
-    //draw right paddle centered initially
-    drawRectangle(SCREEN_EDGE + CANVAS_WIDTH - PADDLE_WIDTH,
-      rightPaddleCenter - PADDLE_HEIGHT/2, PADDLE_WIDTH, PADDLE_HEIGHT, 'white');
+  //draw right paddle after its positions is updated
 
-        /*
-        Computer Paddle:
-        1.  Set up setInterval function
-        2.  If abs(center of paddle - position of ball y) >= 40
-                lower paddle until is in range
-        3.  else if abs(center of paddle -  ballYPosition)<=40
-                leave paddle
-
-        center of paddle =
-
-        */
+  drawRectangle(SCREEN_EDGE + CANVAS_WIDTH - PADDLE_WIDTH,
+      rightPaddleCenter - PADDLE_HEIGHT/2, PADDLE_WIDTH,
+      PADDLE_HEIGHT, 'white');
 }
 
 function moveBall() {
@@ -104,24 +96,36 @@ function moveBall() {
   ballYPosition = ballYPosition + ballYVelocity;
   let topOfLeftPaddle = mouseY - PADDLE_HEIGHT/2;
   let bottomOfLeftPaddle = mouseY + PADDLE_HEIGHT/2;
+  let topOfRightPaddle = rightPaddleCenter - PADDLE_HEIGHT/2;
+  let bottomOfRightPaddle = rightPaddleCenter + PADDLE_HEIGHT/2;
 
   if(ballXPosition >= SCREEN_EDGE + CANVAS_WIDTH) { //right edge
-    ballXVelocity = -ballXVelocity;
-  }
-  else if (ballXPosition <= SCREEN_EDGE) {//left edge
-    if(ballYPosition >= topOfLeftPaddle && ballYPosition <= bottomOfLeftPaddle) {
-      //ball hits paddle!
-      ballXVelocity = -ballXVelocity;
-    }
+    if(ballYPosition >= topOfRightPaddle &&
+        ballYPosition <= bottomOfRightPaddle) {
+          //ball hits computer paddle!
+          ballXVelocity = -ballXVelocity;
+        }
     else {
-      //ball misses paddle!
+      //ball misses computer paddle!
       resetBall();
     }
   }
-  else if (ballYPosition >= SCREEN_EDGE + CANVAS_HEIGHT) {//bottom edge
+  else if (ballXPosition <= SCREEN_EDGE) {//left edge
+    if(ballYPosition >= topOfLeftPaddle && ballYPosition <= bottomOfLeftPaddle) {
+      //ball hits player paddle!
+      ballXVelocity = -ballXVelocity;
+    }
+    else {
+      //ball misses player paddle!
+      resetBall();
+    }
+  }
+  else if (ballYPosition >= SCREEN_EDGE + CANVAS_HEIGHT) {
+    //bounce off of bottom edge
     ballYVelocity = -ballYVelocity;
   }
-  else if (ballYPosition <= SCREEN_EDGE) {//top edge
+  else if (ballYPosition <= SCREEN_EDGE) {
+    //bounce off of top edge
     ballYVelocity = -ballYVelocity;
   }
 
@@ -130,11 +134,22 @@ function moveBall() {
 }
 
 function resetBall() {
+  //change direction in which ball initially goes after reset
+  throwBallInPlayersDirection = !throwBallInPlayersDirection;
+
   ballXPosition = SCREEN_EDGE + CANVAS_WIDTH/2;
   ballYPosition = SCREEN_EDGE + CANVAS_HEIGHT/2;
-  ballXVelocity = 8;
+
+  if(throwBallInPlayersDirection === true) {
+    ballXVelocity = -8
+  }
+  else {
+    ballXVelocity = 8;
+  }
   ballYVelocity = 5;
 }
+
+setTimeo
 
 function drawBall(xPos, yPos, radius) {
   context.beginPath();
