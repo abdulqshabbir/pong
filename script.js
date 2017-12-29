@@ -17,6 +17,7 @@ let ballXVelocity = 8;
 let ballYVelocity = 5;
 let rightPaddleCenter = SCREEN_EDGE + CANVAS_HEIGHT/2;
 let throwBallInPlayersDirection = true;
+let numberOfRallies = 0; //used to keep track of how fast to move ball
 
 window.onload = function() {// wait for window to load
 
@@ -76,11 +77,11 @@ function moveComputerPaddle() {
     ballIsABovePaddle = false;
   }
 
-  if(Math.abs(distanceBetweenPaddleAndBall) >= 35
+  if(Math.abs(distanceBetweenPaddleAndBall) >= 20
           && ballIsABovePaddle) {
             rightPaddleCenter -= 10;
   }
-  else if (Math.abs(distanceBetweenPaddleAndBall) >= 35
+  else if (Math.abs(distanceBetweenPaddleAndBall) >= 20
           && !ballIsABovePaddle) {
             rightPaddleCenter += 10;
   }
@@ -104,29 +105,38 @@ function moveBall() {
         ballYPosition <= bottomOfRightPaddle) {
           //ball hits computer paddle!
           ballXVelocity = -ballXVelocity;
+          numberOfRallies++;
+          console.log(numberOfRallies);
         }
     else {
       //ball misses computer paddle!
       resetBall();
     }
   }
-  else if (ballXPosition <= SCREEN_EDGE) {//left edge
+  if (ballXPosition <= SCREEN_EDGE) {//left edge
     if(ballYPosition >= topOfLeftPaddle && ballYPosition <= bottomOfLeftPaddle) {
       //ball hits player paddle!
       ballXVelocity = -ballXVelocity;
+      numberOfRallies;
+      console.log(numberOfRallies);
     }
     else {
       //ball misses player paddle!
       resetBall();
     }
   }
-  else if (ballYPosition >= SCREEN_EDGE + CANVAS_HEIGHT) {
+  if (ballYPosition >= SCREEN_EDGE + CANVAS_HEIGHT) {
     //bounce off of bottom edge
     ballYVelocity = -ballYVelocity;
   }
-  else if (ballYPosition <= SCREEN_EDGE) {
+  if (ballYPosition <= SCREEN_EDGE) {
     //bounce off of top edge
     ballYVelocity = -ballYVelocity;
+  }
+
+  if(numberOfRallies >= 3) {//make game harder for both players
+    numberOfRallies = 0;
+    makeBallMoveFaster();
   }
 
   //draw ball
@@ -147,9 +157,20 @@ function resetBall() {
     ballXVelocity = 8;
   }
   ballYVelocity = 5;
+  //This variable is how the top-left corner
 }
 
-setTimeo
+function makeBallMoveFaster() {
+
+  if(ballYVelocity >= 0) {
+    ballYVelocity += 1;
+    console.log('ballYVelocity: ', Math.abs(ballYVelocity));
+  }
+  else if(ballYVelocity < 0) {
+    ballYVelocity -= 1;
+    console.log('ballYVelocity: ', Math.abs(ballYVelocity));
+  }
+}
 
 function drawBall(xPos, yPos, radius) {
   context.beginPath();
