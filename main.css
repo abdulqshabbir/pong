@@ -1,0 +1,21 @@
+html, body {
+  height: 100%;
+}
+
+#playerScore {
+  font-size: 30px;
+  display: absolute;
+  top: 200px;
+  left: 200px;
+  width: 300px;
+  background-color: grey;
+}
+
+#computerScore {
+  font-size: 30px;
+  display: absolute;
+  top: 200px;
+  left: 200px;
+  width: 300px;
+  background-color: grey;
+}

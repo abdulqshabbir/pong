@@ -1,6 +1,11 @@
 'use strict';
 //-------------------- Global Variables ---------------------------//
+const displayPlayerScore = document.getElementById('playerScore');
+const displayComputerScore = document.getElementById('computerScore');
+let playerScore = 0;
+let computerScore = 0;
 
+console.log(displayPlayerScore.textContent);
 const CANVAS_HEIGHT = 300;
 const CANVAS_WIDTH = 400;
 //SCREEN_EDGE is how the top-left corner of the canvas is from the viewport
@@ -106,11 +111,11 @@ function moveBall() {
           //ball hits computer paddle!
           ballXVelocity = -ballXVelocity;
           numberOfRallies++;
-          console.log(numberOfRallies);
         }
     else {
       //ball misses computer paddle!
       resetBall();
+      updateScore('player');
     }
   }
   if (ballXPosition <= SCREEN_EDGE) {//left edge
@@ -123,6 +128,7 @@ function moveBall() {
     else {
       //ball misses player paddle!
       resetBall();
+      updateScore('computer');
     }
   }
   if (ballYPosition >= SCREEN_EDGE + CANVAS_HEIGHT) {
@@ -160,6 +166,40 @@ function resetBall() {
   //This variable is how the top-left corner
 }
 
+function updateScore(roundWinner) {
+  if(roundWinner === 'player') {
+    updateDisplay('player');
+  }
+  else if(roundWinner === 'computer') {
+    updateDisplay('computer');
+  }
+}
+
+function updateDisplay(winner) {
+  if(playerScore >= 9 || computerScore >= 9) {
+    displayGameOver();
+  }
+  if(winner === 'player') {
+    playerScore++;
+    let tempStoragePlayer = displayPlayerScore.innerHTML.split('');
+    tempStoragePlayer = tempStoragePlayer.splice(0, tempStoragePlayer.length - 1);
+    tempStoragePlayer.push(playerScore);
+    let textToDisplay = tempStoragePlayer.join('');
+    console.log(textToDisplay);
+    displayPlayerScore.innerHTML = textToDisplay;
+  }
+  else if (winner === 'computer') {
+    computerScore++;
+    let tempStorageComputer = displayComputerScore.innerHTML.split('');
+    tempStorageComputer = tempStorageComputer.splice(0, tempStorageComputer.length - 1);
+    tempStorageComputer.push(' ', computerScore);
+    console.log(tempStorageComputer);
+    let textToDisplay = tempStorageComputer.join('');
+    console.log(textToDisplay);
+    displayComputerScore.innerHTML = textToDisplay;
+  }
+}
+
 function makeBallMoveFaster() {
 
   if(ballYVelocity >= 0) {
@@ -170,6 +210,12 @@ function makeBallMoveFaster() {
     ballYVelocity -= 1;
     console.log('ballYVelocity: ', Math.abs(ballYVelocity));
   }
+}
+
+function displayGameOver() {
+  displayPlayerScore.remove();
+  displayComputerScore.remove(); 
+  canvas.remove();
 }
 
 function drawBall(xPos, yPos, radius) {
