@@ -5,15 +5,15 @@ const displayComputerScore = document.getElementById('computerScore');
 let playerScore = 0;
 let computerScore = 0;
 
-console.log(displayPlayerScore.textContent);
 const CANVAS_HEIGHT = 300;
 const CANVAS_WIDTH = 400;
-//SCREEN_EDGE is how the top-left corner of the canvas is from the viewport
+//SCREEN_EDGE is how far the top-left corner of the canvas is from the viewport
 const SCREEN_EDGE = 100;
 const PADDLE_WIDTH = 10;
 const PADDLE_HEIGHT = 70;
 const BALL_RADIUS = 7;
 const FRAMES_PER_SECOND = 35;
+const HEIGHT_OF_SCORE_DIVS = 59.2;
 let mouseX = 0;
 let mouseY = 0;
 let ballXPosition = SCREEN_EDGE + CANVAS_WIDTH/2;//center vertically
@@ -122,8 +122,10 @@ function moveBall() {
     if(ballYPosition >= topOfLeftPaddle && ballYPosition <= bottomOfLeftPaddle) {
       //ball hits player paddle!
       ballXVelocity = -ballXVelocity;
-      numberOfRallies;
-      console.log(numberOfRallies);
+      numberOfRallies++;
+      let deltaY = ballYPosition - (topOfLeftPaddle + PADDLE_HEIGHT/2);
+      ballYVelocity = deltaY*0.35;
+      console.log(ballYVelocity);
     }
     else {
       //ball misses player paddle!
@@ -185,7 +187,6 @@ function updateDisplay(winner) {
     tempStoragePlayer = tempStoragePlayer.splice(0, tempStoragePlayer.length - 1);
     tempStoragePlayer.push(playerScore);
     let textToDisplay = tempStoragePlayer.join('');
-    console.log(textToDisplay);
     displayPlayerScore.innerHTML = textToDisplay;
   }
   else if (winner === 'computer') {
@@ -193,28 +194,24 @@ function updateDisplay(winner) {
     let tempStorageComputer = displayComputerScore.innerHTML.split('');
     tempStorageComputer = tempStorageComputer.splice(0, tempStorageComputer.length - 1);
     tempStorageComputer.push(' ', computerScore);
-    console.log(tempStorageComputer);
     let textToDisplay = tempStorageComputer.join('');
-    console.log(textToDisplay);
     displayComputerScore.innerHTML = textToDisplay;
   }
 }
 
 function makeBallMoveFaster() {
 
-  if(ballYVelocity >= 0) {
-    ballYVelocity += 1;
-    console.log('ballYVelocity: ', Math.abs(ballYVelocity));
+  if(ballXVelocity >= 0) {
+    ballXVelocity += 1;
   }
-  else if(ballYVelocity < 0) {
-    ballYVelocity -= 1;
-    console.log('ballYVelocity: ', Math.abs(ballYVelocity));
+  else if(ballXVelocity < 0) {
+    ballXVelocity -= 1;
   }
 }
 
 function displayGameOver() {
   displayPlayerScore.remove();
-  displayComputerScore.remove(); 
+  displayComputerScore.remove();
   canvas.remove();
 }
 
