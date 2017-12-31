@@ -1,14 +1,15 @@
 'use strict';
 //-------------------- Global Variables ---------------------------//
+
 const displayPlayerScore = document.getElementById('playerScore');
 const displayComputerScore = document.getElementById('computerScore');
 let playerScore = 0;
 let computerScore = 0;
 
-const CANVAS_HEIGHT = 300;
 const CANVAS_WIDTH = 400;
+const CANVAS_HEIGHT = 300;
 //SCREEN_EDGE is how far the top-left corner of the canvas is from the viewport
-const SCREEN_EDGE = 100;
+const SCREEN_EDGE = 0;
 const PADDLE_WIDTH = 10;
 const PADDLE_HEIGHT = 70;
 const BALL_RADIUS = 7;
@@ -27,6 +28,10 @@ let numberOfRallies = 0; //used to keep track of how fast to move ball
 window.onload = function() {// wait for window to load
 
 // --------------------Event Listeners ---------------------------//
+const canvas = document.getElementById('canvas');
+const context = canvas.getContext('2d');
+const CANVAS_TOP = canvas.getBoundingClientRect().top;
+const CANVAS_BOTTOM = canvas.getBoundingClientRect().bottom;
 
 //move player paddle on mouse move
 window.addEventListener('mousemove', (event) => {
@@ -36,8 +41,6 @@ window.addEventListener('mousemove', (event) => {
 });
 
 //--------------------- Game Logic ------------------------------//
-const canvas = document.getElementById('canvas');
-const context = canvas.getContext('2d');
 
 setInterval(drawObjects, 1000/FRAMES_PER_SECOND); //animate!
 
@@ -69,7 +72,7 @@ function movePlayerPaddle(mouseX, mouseY) {
   }
   else{
     //move paddle normally
-    drawRectangle(SCREEN_EDGE, mouseY - PADDLE_HEIGHT/2,
+    drawRectangle(SCREEN_EDGE, mouseY - CANVAS_TOP - PADDLE_HEIGHT/2,
       PADDLE_WIDTH, PADDLE_HEIGHT, 'white');
   }
 }
